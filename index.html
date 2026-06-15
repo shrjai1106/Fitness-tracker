@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>GAME ON — Football Fitness 26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&display=swap" rel="stylesheet" />
+<style>
+/* ============ WORLD CUP 26 TOKENS ============ */
+:root{
+  --black:#0B0B0B; --ink:#141414; --white:#FFFFFF;
+  --red:#E8112D; --orange:#FF4B1F; --coral:#FF9E80;
+  --purple:#6A1FE0; --lav:#C9A8F0; --orchid:#A85BC4; --pink:#E8246C;
+  --navy:#1A2C8C; --blue:#2F6BE8; --sky:#6FA8F0; --cyan:#22E8C8;
+  --teal:#0A5C3A; --green:#15C24E; --lime:#B6EE2A; --yellow:#F0E92A;
+  --maroon:#7A1419;
+  --muted:#6E6E6E; --line:#EAEAEA; --panel:#F6F6F4;
+  --display:'Anton', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --body:'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--body);
+  background:#000;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  display:flex; justify-content:center;
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select{font-family:inherit;}
+::selection{background:var(--lime);color:#000;}
+
+/* ============ PHONE SHELL ============ */
+.phone{
+  width:100%; max-width:440px; min-height:100vh;
+  background:var(--white); position:relative; overflow:hidden;
+  display:flex; flex-direction:column;
+  box-shadow:0 0 0 1px #000, 0 30px 90px rgba(0,0,0,.5);
+}
+@media(min-width:480px){ .phone{ min-height:900px; height:auto; margin:0; } body{align-items:flex-start;} }
+
+/* ============ TOP BAR ============ */
+.topbar{
+  display:flex; align-items:center; gap:12px;
+  padding:16px 18px 12px; background:var(--white);
+  border-bottom:2px solid var(--black);
+  position:sticky; top:0; z-index:40;
+}
+.mark{ width:34px;height:34px;border-radius:9px;overflow:hidden;flex-shrink:0;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;}
+.mark i{display:block;}
+.mark i:nth-child(1){background:var(--blue);}
+.mark i:nth-child(2){background:var(--red);border-bottom-left-radius:9px;}
+.mark i:nth-child(3){background:var(--yellow);}
+.mark i:nth-child(4){background:var(--green);border-top-right-radius:9px;}
+.topbar .ttl{ font-family:var(--display); font-size:24px; line-height:.9; letter-spacing:.5px;
+  text-transform:uppercase; margin-top:3px;}
+.topbar .tm{font-size:9px;font-weight:700;color:var(--muted);align-self:flex-start;margin-top:2px;}
+.topbar .spacer{margin-left:auto;}
+.topbar .day{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:right;line-height:1.2;}
+
+/* ============ SCROLL AREA ============ */
+.scroll{flex:1; overflow-y:auto; padding:0 0 96px; background:var(--white);}
+.screen{display:none; padding:16px 18px 0; animation:fade .25s ease;}
+.screen.on{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* section label like the brand sheet */
+.eyebrow{font-family:var(--display);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--black);margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:"";width:14px;height:14px;background:var(--red);border-radius:4px;display:inline-block;}
+.eyebrow:first-child{margin-top:4px;}
+
+/* ============ HERO (26 GRAPHIC SPLIT) ============ */
+.hero{
+  position:relative; border-radius:18px; overflow:hidden;
+  background:var(--sky); color:var(--black);
+  padding:20px; min-height:188px; display:flex; flex-direction:column; justify-content:space-between;
+}
+.hero .wedge{ position:absolute; right:-40px; bottom:-40px; width:78%; height:150%;
+  background:var(--red); border-top-left-radius:200px;}
+.hero .hl{position:relative;z-index:2;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;}
+.hero .big{position:relative;z-index:2;font-family:var(--display);font-size:78px;line-height:.82;letter-spacing:-1px;}
+.hero .big small{font-size:20px;vertical-align:top;letter-spacing:0;}
+.hero .sub{position:relative;z-index:2;color:var(--white);font-weight:700;font-size:13px;}
+.hero.red{background:var(--red);} .hero.red .wedge{background:var(--purple);}
+.hero.over{background:var(--orange);} .hero.over .wedge{background:var(--maroon);}
+
+/* macro bars */
+.macros{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.macro{border:2px solid var(--black);border-radius:12px;padding:10px 11px;}
+.macro .mh{display:flex;justify-content:space-between;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;}
+.macro .val{font-family:var(--display);font-size:22px;line-height:1;margin:6px 0 7px;}
+.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:6px;transition:width .5s cubic-bezier(.2,.8,.2,1);}
+.macro.p .bar i{background:var(--red);} .macro.c .bar i{background:var(--blue);} .macro.f .bar i{background:var(--yellow);}
+
+/* generic card */
+.card{border:2px solid var(--black);border-radius:16px;padding:16px;margin-bottom:14px;background:var(--white);}
+.card.flat{border-color:var(--line);}
+.row{display:flex;align-items:center;gap:12px;}
+.row.sb{justify-content:space-between;}
+.tap{cursor:pointer;transition:transform .12s ease;}
+.tap:active{transform:scale(.985);}
+
+.linkcard{display:flex;align-items:center;gap:14px;border-radius:16px;padding:16px;margin-bottom:12px;color:#fff;}
+.linkcard .ic{width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.22);display:grid;place-items:center;flex-shrink:0;}
+.linkcard h4{margin:0;font-family:var(--display);font-size:19px;letter-spacing:.5px;text-transform:uppercase;}
+.linkcard p{margin:2px 0 0;font-size:12px;font-weight:600;opacity:.92;}
+.linkcard .arr{margin-left:auto;font-size:22px;font-weight:800;}
+
+/* tip strip */
+.tipstrip{background:var(--black);color:#fff;border-radius:16px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+.tipstrip .k{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--lime);}
+.tipstrip .t{font-size:15px;font-weight:700;line-height:1.35;margin-top:6px;}
+.tipstrip .corner{position:absolute;top:-18px;right:-18px;width:60px;height:60px;background:var(--red);border-radius:0 0 0 60px;}
+
+/* stat pills */
+.pills{display:flex;gap:10px;}
+.pill{flex:1;border:2px solid var(--black);border-radius:14px;padding:12px;text-align:center;}
+.pill .n{font-family:var(--display);font-size:30px;line-height:.9;}
+.pill .l{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:4px;}
+
+/* ============ FORMS ============ */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.field input, .field select{
+  width:100%;border:2px solid var(--black);border-radius:12px;padding:13px 14px;font-size:15px;font-weight:600;background:#fff;
+  appearance:none;
+}
+.field input:focus,.field select:focus{outline:3px solid var(--lime);outline-offset:-1px;}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* choice chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{border:2px solid var(--black);border-radius:999px;padding:9px 14px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:#fff;transition:all .12s;}
+.chip.on{background:var(--black);color:#fff;}
+.chip.q{font-weight:700;text-transform:none;letter-spacing:0;}
+
+/* big button */
+.btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--red);color:#fff;border-radius:14px;padding:16px;
+  font-family:var(--display);font-size:20px;letter-spacing:1px;text-transform:uppercase;
+  border:2px solid var(--black); transition:transform .12s, background .15s;
+}
+.btn:active{transform:scale(.98);}
+.btn.dark{background:var(--black);}
+.btn.ghost{background:#fff;color:#000;}
+.btn.sm{font-size:15px;padding:12px;}
+.btn:disabled{opacity:.4;}
+
+/* food log list */
+.logitem{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+.logitem .tag{width:10px;height:38px;border-radius:5px;flex-shrink:0;}
+.logitem .nm{font-weight:700;font-size:14px;}
+.logitem .mi{font-size:11px;color:var(--muted);font-weight:600;}
+.logitem .kc{margin-left:auto;font-family:var(--display);font-size:20px;}
+.logitem .del{margin-left:10px;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);font-weight:800;color:var(--muted);font-size:16px;line-height:1;}
+.logitem .del:active{background:var(--red);color:#fff;border-color:var(--red);}
+
+.empty{text-align:center;padding:26px 10px;color:var(--muted);font-weight:600;font-size:13px;}
+
+/* insight rows */
+.insight{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line);}
+.insight .dot{width:12px;height:12px;border-radius:4px;margin-top:4px;flex-shrink:0;}
+.insight b{font-size:13px;} .insight p{margin:2px 0 0;font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.4;}
+
+/* workout session */
+.block{border:2px solid var(--black);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.block .bh{display:flex;align-items:center;gap:10px;padding:11px 14px;color:#fff;}
+.block .bh .bn{font-family:var(--display);font-size:15px;letter-spacing:.5px;text-transform:uppercase;}
+.block .bh .bt{margin-left:auto;font-size:11px;font-weight:800;background:rgba(255,255,255,.25);padding:3px 9px;border-radius:999px;}
+.ex{padding:12px 14px;border-top:1px solid var(--line);}
+.ex:first-child{border-top:none;}
+.ex .et{display:flex;justify-content:space-between;gap:10px;}
+.ex .en{font-weight:800;font-size:14px;}
+.ex .ed{font-size:12px;font-weight:800;color:var(--black);white-space:nowrap;background:var(--lime);padding:2px 8px;border-radius:7px;}
+.ex .ec{font-size:12px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.4;}
+
+/* tips grid */
+.tipgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tcard{border-radius:16px;padding:15px;color:#fff;min-height:128px;display:flex;flex-direction:column;justify-content:space-between;}
+.tcard .tk{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.9;}
+.tcard .tt{font-size:14px;font-weight:800;line-height:1.3;}
+.tcard.dark{color:#fff;} .tcard.black{background:#000;}
+
+/* profile readout */
+.kv{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-weight:700;font-size:14px;}
+.kv span{color:var(--muted);font-weight:700;}
+.kv b{font-family:var(--display);font-size:18px;font-weight:400;}
+
+/* ============ ONBOARDING ============ */
+#onboard{position:absolute;inset:0;z-index:60;background:var(--white);display:none;flex-direction:column;}
+#onboard.on{display:flex;}
+.ob-hero{background:var(--black);color:#fff;padding:26px 20px 24px;position:relative;overflow:hidden;}
+.ob-hero .pat{position:absolute;inset:0;opacity:.9;}
+.ob-hero .pat i{position:absolute;}
+.ob-kick{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);position:relative;z-index:2;}
+.ob-title{font-family:var(--display);font-size:62px;line-height:.82;text-transform:uppercase;letter-spacing:-.5px;position:relative;z-index:2;margin-top:6px;}
+.ob-title .y{color:var(--red);}
+.ob-sub{position:relative;z-index:2;font-weight:600;font-size:13px;opacity:.85;margin-top:10px;max-width:300px;}
+.ob-body{flex:1;overflow-y:auto;padding:20px 20px 24px;}
+.ob-foot{padding:14px 20px 20px;border-top:2px solid var(--black);}
+.progress{display:flex;gap:6px;margin-bottom:16px;}
+.progress i{flex:1;height:5px;border-radius:3px;background:var(--line);}
+.progress i.on{background:var(--red);}
+.step{display:none;} .step.on{display:block;animation:fade .25s ease;}
+.step h3{font-family:var(--display);font-size:26px;text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;}
+.step .stx{color:var(--muted);font-weight:600;font-size:13px;margin:0 0 18px;}
+
+/* ============ BOTTOM NAV ============ */
+.nav{
+  position:absolute;bottom:0;left:0;right:0;z-index:50;
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:var(--white);border-top:2px solid var(--black);
+}
+.nav button{padding:9px 0 11px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);}
+.nav button svg{width:23px;height:23px;display:block;}
+.nav button span{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;}
+.nav button.on{color:var(--black);}
+.nav button.on .ni{position:relative;}
+.nav button.on .ni::after{content:"";position:absolute;left:50%;top:-9px;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--red);}
+
+.toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);
+  background:var(--black);color:#fff;padding:11px 18px;border-radius:999px;font-weight:800;font-size:13px;
+  z-index:80;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;border:2px solid var(--lime);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.tmtag{font-size:9px;font-weight:800;color:var(--muted);}
+.foot-note{text-align:center;font-size:10px;color:var(--muted);font-weight:600;padding:18px 0 4px;letter-spacing:.5px;}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ============ ONBOARDING ============ -->
+  <div id="onboard" class="on">
+    <div class="ob-hero">
+      <div class="pat" id="obpat"></div>
+      <div class="ob-kick">FIFA-STYLE FOOTBALL FITNESS</div>
+      <div class="ob-title">WE ARE<br><span class="y">26</span></div>
+      <div class="ob-sub">Track your fuel. Train like a pro. Built for footballers and the people who live the game.</div>
+    </div>
+    <div class="ob-body">
+      <div class="progress"><i class="on"></i><i></i><i></i></div>
+
+      <div class="step on" data-step="0">
+        <h3>Your Profile</h3>
+        <p class="stx">We use this to dial in your daily fuel target.</p>
+        <div class="field"><label>Name</label><input id="ob_name" placeholder="e.g. Shanjai" /></div>
+        <div class="two">
+          <div class="field"><label>Age</label><input id="ob_age" type="number" inputmode="numeric" placeholder="24" /></div>
+          <div class="field"><label>Sex</label>
+            <select id="ob_sex"><option value="m">Male</option><option value="f">Female</option><option value="x">Prefer not to say</option></select>
+          </div>
+        </div>
+        <div class="two">
+          <div class="field"><label>Weight (kg)</label><input id="ob_wt" type="number" inputmode="decimal" placeholder="72" /></div>
+          <div class="field"><label>Height (cm)</label><input id="ob_ht" type="number" inputmode="numeric" placeholder="178" /></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="1">
+        <h3>On The Pitch</h3>
+        <p class="stx">Your position shapes the work you'll get.</p>
+        <div class="field"><label>Position</label>
+          <div class="chips" id="ob_pos">
+            <button class="chip" data-v="GK">Goalkeeper</button>
+            <button class="chip" data-v="DEF">Defender</button>
+            <button class="chip on" data-v="MID">Midfielder</button>
+            <button class="chip" data-v="FWD">Forward</button>
+            <button class="chip" data-v="ANY">Just love the game</button>
+          </div>
+        </div>
+        <div class="field" style="margin-top:18px"><label>Training days / week</label>
+          <div class="chips" id="ob_days">
+            <button class="chip" data-v="2">1–2</button>
+            <button class="chip on" data-v="4">3–4</button>
+            <button class="chip" data-v="6">5–6</button>
+            <button class="chip" data-v="7">Daily</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <h3>Your Goal</h3>
+        <p class="stx">What are we chasing this block?</p>
+        <div class="field"><label>Primary goal</label>
+          <div class="chips" id="ob_goal">
+            <button class="chip on" data-v="power">Build power</button>
+            <button class="chip" data-v="endurance">More endurance</button>
+            <button class="chip" data-v="lean">Get leaner</button>
+            <button class="chip" data-v="recovery">Recover & maintain</button>
+          </div>
+        </div>
+        <div class="card flat" style="margin-top:18px;background:var(--panel)">
+          <div class="row sb"><span style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.5px">Your daily target</span></div>
+          <div style="font-family:var(--display);font-size:46px;line-height:.9;margin:8px 0 2px" id="ob_preview">2,600</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700" id="ob_preview2">kcal • 130g protein target</div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-foot">
+      <div class="row" style="gap:10px">
+        <button class="btn ghost sm" id="ob_back" style="flex:0 0 96px;display:none">Back</button>
+        <button class="btn" id="ob_next" style="flex:1">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TOP BAR ============ -->
+  <div class="topbar">
+    <div class="mark"><i></i><i></i><i></i><i></i></div>
+    <div class="ttl" id="screenTitle">Today</div>
+    <div class="tm">TM</div>
+    <div class="spacer"></div>
+    <div class="day" id="dayLabel">MATCH<br>WEEK</div>
+  </div>
+
+  <!-- ============ SCREENS ============ -->
+  <div class="scroll" id="scroll">
+
+    <!-- TODAY -->
+    <section class="screen on" id="s-today">
+      <div class="eyebrow">Fuel left today</div>
+      <div class="hero tap" id="todayHero" onclick="go('eat')">
+        <div class="wedge"></div>
+        <div class="hl">CALORIES REMAINING</div>
+        <div class="big" id="kcalLeft">2,600</div>
+        <div class="sub" id="kcalSub">0 of 2,600 kcal used</div>
+      </div>
+      <div class="macros">
+        <div class="macro p"><div class="mh"><span>Protein</span><span id="pPct">0%</span></div><div class="val"><span id="pNow">0</span><span style="font-size:12px;color:var(--muted)">/<span id="pGoal">0</span>g</span></div><div class="bar"><i id="pBar" style="width:0%"></i></div></div>
+        <div class="macro c"><div class="mh"><span>Carbs</span><span id="cPct">0%</span></div><div class="val"><span id="cNow">0</span><span style="font-size:12px;color:var(--muted)">/<span id="cGoal">0</span>g</span></div><div class="bar"><i id="cBar" style="width:0%"></i></div></div>
+        <div class="macro f"><div class="mh"><span>Fat</span><span id="fPct">0%</span></div><div class="val"><span id="fNow">0</span><span style="font-size:12px;color:var(--muted)">/<span id="fGoal">0</span>g</span></div><div class="bar"><i id="fBar" style="width:0%"></i></div></div>
+      </div>
+
+      <div class="eyebrow">Today's session</div>
+      <div class="linkcard tap" id="todaySession" style="background:var(--blue)" onclick="go('train')">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg>
+        </div>
+        <div>
+          <h4 id="sessName">Power & Speed</h4>
+          <p id="sessMeta">30 min • tuned for midfielders</p>
+        </div>
+        <div class="arr">→</div>
+      </div>
+
+      <div class="eyebrow">Quick tip</div>
+      <div class="tipstrip tap" onclick="go('tips')">
+        <div class="corner"></div>
+        <div class="k">GAME ON</div>
+        <div class="t" id="todayTip">Eat your biggest carb meal the night before a match — top off glycogen, not your nerves.</div>
+      </div>
+
+      <div class="eyebrow">Your form</div>
+      <div class="pills">
+        <div class="pill"><div class="n" id="streakN">0</div><div class="l">Day streak</div></div>
+        <div class="pill"><div class="n" id="trainedN">0</div><div class="l">Sessions</div></div>
+        <div class="pill"><div class="n" id="loggedN">0</div><div class="l">Meals logged</div></div>
+      </div>
+      <div class="foot-note">WE ARE 26 — GAME ON™</div>
+    </section>
+
+    <!-- EAT -->
+    <section class="screen" id="s-eat">
+      <div class="eyebrow">Today's intake</div>
+      <div class="hero red">
+        <div class="wedge"></div>
+        <div class="hl" style="color:#fff">CONSUMED / TARGET</div>
+        <div class="big" style="color:#fff"><span id="eatNow">0</span><small id="eatGoal" style="color:rgba(255,255,255,.7)"> / 2,600</small></div>
+        <div class="sub" style="color:#fff" id="eatStatus">Log your first meal to get going.</div>
+      </div>
+
+      <div class="eyebrow">Quick add — footballer fuel</div>
+      <div class="chips" id="quickFoods" style="margin-bottom:6px"></div>
+
+      <div class="eyebrow">Log a meal</div>
+      <div class="card flat">
+        <div class="field"><label>Food</label><input id="f_name" placeholder="Grilled chicken & rice" /></div>
+        <div class="two">
+          <div class="field"><label>Calories</label><input id="f_kcal" type="number" inputmode="numeric" placeholder="520" /></div>
+          <div class="field"><label>Meal</label>
+            <select id="f_meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option><option>Pre-match</option><option>Post-match</option></select>
+          </div>
+        </div>
+        <div class="two" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="field"><label>Protein g</label><input id="f_p" type="number" inputmode="numeric" placeholder="40" /></div>
+          <div class="field"><label>Carbs g</label><input id="f_c" type="number" inputmode="numeric" placeholder="60" /></div>
+          <div class="field"><label>Fat g</label><input id="f_f" type="number" inputmode="numeric" placeholder="12" /></div>
+        </div>
+        <button class="btn" id="addFood">Add to today</button>
+      </div>
+
+      <div class="eyebrow">Logged today</div>
+      <div class="card flat" id="logList"><div class="empty">Nothing logged yet. Hit a quick-add or fill the form above.</div></div>
+      <div class="foot-note">FUEL THE LEGACY</div>
+    </section>
+
+    <!-- TRAIN -->
+    <section class="screen" id="s-train">
+      <div class="eyebrow">Build a session</div>
+      <div class="card flat">
+        <div class="field"><label>Focus</label>
+          <div class="chips" id="t_focus">
+            <button class="chip on" data-v="auto">Auto (my goal)</button>
+            <button class="chip" data-v="speed">Speed</button>
+            <button class="chip" data-v="power">Power</button>
+            <button class="chip" data-v="agility">Agility</button>
+            <button class="chip" data-v="endurance">Endurance</button>
+            <button class="chip" data-v="recovery">Recovery</button>
+          </div>
+        </div>
+        <div class="field" style="margin-top:16px"><label>Time available</label>
+          <div class="chips" id="t_time">
+            <button class="chip" data-v="15">15 min</button>
+            <button class="chip on" data-v="30">30 min</button>
+            <button class="chip" data-v="45">45 min</button>
+          </div>
+        </div>
+        <button class="btn dark" id="genBtn" style="margin-top:6px">Generate session</button>
+      </div>
+
+      <div id="sessionOut"></div>
+      <div class="foot-note">TRAIN LIKE IT'S THE FINAL</div>
+    </section>
+
+    <!-- TIPS -->
+    <section class="screen" id="s-tips">
+      <div class="eyebrow">Quick tips</div>
+      <div class="chips" id="tipFilter" style="margin-bottom:14px">
+        <button class="chip on" data-v="all">All</button>
+        <button class="chip" data-v="Nutrition">Nutrition</button>
+        <button class="chip" data-v="Training">Training</button>
+        <button class="chip" data-v="Recovery">Recovery</button>
+        <button class="chip" data-v="Match day">Match day</button>
+      </div>
+      <div class="tipgrid" id="tipGrid"></div>
+      <button class="btn ghost sm" id="shuffleTips" style="margin-top:14px">Shuffle tips</button>
+      <div class="foot-note">SMALL HABITS. BIG GAMES.</div>
+    </section>
+
+    <!-- ME -->
+    <section class="screen" id="s-me">
+      <div class="eyebrow">Your targets</div>
+      <div class="card">
+        <div class="kv"><span>Calorie target</span><b id="me_kcal">—</b></div>
+        <div class="kv"><span>Protein target</span><b id="me_protein">—</b></div>
+        <div class="kv"><span>Carbs target</span><b id="me_carbs">—</b></div>
+        <div class="kv"><span>Fat target</span><b id="me_fat">—</b></div>
+        <div class="kv" style="border-bottom:none"><span>Est. maintenance (TDEE)</span><b id="me_tdee">—</b></div>
+      </div>
+
+      <div class="eyebrow">Profile</div>
+      <div class="card flat">
+        <div class="field"><label>Name</label><input id="me_name" /></div>
+        <div class="two">
+          <div class="field"><label>Weight (kg)</label><input id="me_wt" type="number" inputmode="decimal" /></div>
+          <div class="field"><label>Height (cm)</label><input id="me_ht" type="number" inputmode="numeric" /></div>
+        </div>
+        <div class="two">
+          <div class="field"><label>Age</label><input id="me_age" type="number" inputmode="numeric" /></div>
+          <div class="field"><label>Sex</label><select id="me_sex"><option value="m">Male</option><option value="f">Female</option><option value="x">Prefer not</option></select></div>
+        </div>
+        <div class="field"><label>Position</label>
+          <div class="chips" id="me_pos">
+            <button class="chip" data-v="GK">GK</button><button class="chip" data-v="DEF">DEF</button>
+            <button class="chip" data-v="MID">MID</button><button class="chip" data-v="FWD">FWD</button>
+            <button class="chip" data-v="ANY">Fan</button>
+          </div>
+        </div>
+        <div class="field"><label>Goal</label>
+          <div class="chips" id="me_goal">
+            <button class="chip" data-v="power">Power</button><button class="chip" data-v="endurance">Endurance</button>
+            <button class="chip" data-v="lean">Leaner</button><button class="chip" data-v="recovery">Maintain</button>
+          </div>
+        </div>
+        <div class="field"><label>Training days / week</label>
+          <div class="chips" id="me_days">
+            <button class="chip" data-v="2">1–2</button><button class="chip" data-v="4">3–4</button>
+            <button class="chip" data-v="6">5–6</button><button class="chip" data-v="7">Daily</button>
+          </div>
+        </div>
+        <button class="btn sm" id="me_save">Save changes</button>
+      </div>
+
+      <div class="eyebrow">Patterns</div>
+      <div class="card flat" id="patternBox"><div class="empty">Log meals across a few days to unlock your eating patterns.</div></div>
+
+      <button class="btn ghost sm" id="resetBtn" style="border-color:var(--red);color:var(--red)">Reset all data</button>
+      <div class="foot-note">GAME ON™ • DATA STAYS ON YOUR DEVICE</div>
+    </section>
+
+  </div><!-- /scroll -->
+
+  <!-- ============ NAV ============ -->
+  <div class="nav">
+    <button class="on" data-nav="today"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 9v11h14V9"/></svg></span><span>Today</span></button>
+    <button data-nav="eat"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v8a3 3 0 003 3v7M7 3v6M10 3v6M17 3c-1.5 2-2 4-2 7h3M18 3v18"/></svg></span><span>Eat</span></button>
+    <button data-nav="train"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg></span><span>Train</span></button>
+    <button data-nav="tips"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.7 1 1.3 1 2.5h6c0-1.2.3-1.8 1-2.5A6 6 0 0012 3z"/></svg></span><span>Tips</span></button>
+    <button data-nav="me"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg></span><span>Me</span></button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ============================================================
+   GAME ON — World Cup 26 football fitness
+   Vanilla JS. Data persists in localStorage (works when the
+   file is opened directly in a browser).
+============================================================ */
+const PALETTE=['#E8112D','#6A1FE0','#2F6BE8','#22E8C8','#15C24E','#B6EE2A','#F0E92A','#E8246C','#FF4B1F','#0A5C3A','#1A2C8C','#6FA8F0'];
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const todayKey=()=>new Date().toISOString().slice(0,10);
+
+/* ---------- storage ---------- */
+const DB={
+  read(){ try{ return JSON.parse(localStorage.getItem('gameon26')||'null'); }catch(e){ return mem; } },
+  write(d){ try{ localStorage.setItem('gameon26',JSON.stringify(d)); }catch(e){ mem=d; } }
+};
+let mem=null; // fallback if storage blocked
+let state = DB.read() || null;
+
+/* ---------- nutrition math ---------- */
+function calcTargets(p){
+  const w=+p.weight||72, h=+p.height||178, a=+p.age||24;
+  let bmr = 10*w + 6.25*h - 5*a;
+  bmr += p.sex==='f' ? -161 : p.sex==='m' ? 5 : -78; // neutral midpoint
+  const days=+p.days||4;
+  let act = days>=7?1.9 : days>=6?1.8 : days>=4?1.65 : 1.5;
+  if(p.pos==='MID'||p.pos==='FWD') act+=0.05; // higher running load
+  let tdee = Math.round(bmr*act);
+  let goalAdj = p.goal==='lean'?-0.13 : p.goal==='power'?0.10 : 0;
+  let kcal = Math.round(tdee*(1+goalAdj)/10)*10;
+  let perKg = p.goal==='power'?2.1 : p.goal==='lean'?2.2 : 1.9;
+  let protein = Math.round(w*perKg);
+  let fat = Math.round((kcal*0.25)/9);
+  let carbs = Math.max(0, Math.round((kcal - protein*4 - fat*9)/4));
+  return {tdee, kcal, protein, carbs, fat};
+}
+
+/* ---------- quick foods (football-friendly) ---------- */
+const QUICK=[
+  ['Oats & banana',360,12,62,7],['Eggs (3) & toast',330,22,24,16],
+  ['Chicken & rice',520,45,60,9],['Pasta & tomato',480,16,84,8],
+  ['Protein shake',180,30,8,3],['Greek yogurt & honey',210,18,26,4],
+  ['Salmon & potato',540,38,40,22],['Banana',105,1,27,0],
+  ['Beef & quinoa',560,42,52,18],['Peanut butter toast',290,11,30,15],
+  ['Sports drink',140,0,36,0],['Mixed nuts (30g)',180,6,6,16]
+];
+
+/* ---------- workout library ---------- */
+const WARM=[
+  {n:'Dynamic leg swings',d:'2×10 / leg',c:'Front-to-back & side, controlled, open the hips.'},
+  {n:'A-skips',d:'2×20m',c:'Tall posture, drive the knee, light on the balls of your feet.'},
+  {n:'World’s greatest stretch',d:'2×5 / side',c:'Lunge, rotate, reach — full-body prep in one move.'},
+  {n:'Pogo hops',d:'3×15s',c:'Stiff ankles, minimal ground contact, prime the tendons.'},
+];
+const SPEED=[
+  {n:'Acceleration sprints',d:'6×20m',c:'Explode from a 2-point start, full recovery between reps.'},
+  {n:'Flying sprints',d:'4×30m',c:'15m build-up into 15m max — top-end speed, not effort.'},
+  {n:'Resisted starts',d:'5×15m',c:'Lean forward, punch the ground, low first three steps.'},
+  {n:'Curved runs',d:'6×25m',c:'Sprint an arc like beating a full-back — both directions.'},
+];
+const AGIL=[
+  {n:'5-10-5 shuttle',d:'6 reps',c:'Plant low and hard, change direction off the outside foot.'},
+  {n:'Ladder — icky shuffle',d:'4×2 lengths',c:'Quick feet, eyes up, rhythm over speed first.'},
+  {n:'T-drill',d:'4 reps',c:'Sprint, shuffle, backpedal — match-realistic footwork.'},
+  {n:'Reactive cone cuts',d:'5×30s',c:'Cut on a call/clap — train the decision, not just the move.'},
+];
+const POWER=[
+  {n:'Box jumps',d:'5×4',c:'Land soft and quiet, step down, reset every rep.'},
+  {n:'Broad jumps',d:'5×4',c:'Triple-extend hips, knees, ankles — stick the landing.'},
+  {n:'Bulgarian split squat',d:'4×6 / leg',c:'Single-leg power and balance — control the descent.'},
+  {n:'Lateral bounds',d:'4×6 / side',c:'Push off one leg, stick, hold a beat — football is sideways.'},
+  {n:'Med-ball slams',d:'4×8',c:'Full body, explosive — channel the frustration of a missed chance.'},
+];
+const STR=[
+  {n:'Goblet squat',d:'4×8',c:'Chest up, drive through mid-foot, build the engine.'},
+  {n:'Romanian deadlift',d:'4×8',c:'Hinge at the hips — armour your hamstrings.'},
+  {n:'Nordic curl (assisted)',d:'3×5',c:'Lower slow — the #1 move to keep hamstrings off the table.'},
+  {n:'Walking lunges',d:'3×10 / leg',c:'Long stride, knee tracks the toe, stay tall.'},
+  {n:'Calf raises',d:'3×15',c:'Sprinting and jumping live here — full range, slow down.'},
+];
+const END=[
+  {n:'Tempo runs',d:'6×100m',c:'~75% pace, jog back recovery — aerobic base without the pounding.'},
+  {n:'4-4-4 intervals',d:'4 min on / off',c:'Hold a hard-but-repeatable pace — replicate match tempo.'},
+  {n:'Yo-yo style shuttles',d:'8×40m',c:'Out-and-back with short rest — repeated sprint ability.'},
+  {n:'30-15 intervals',d:'10 min',c:'30s run / 15s walk — the footballer’s engine builder.'},
+];
+const CORE=[
+  {n:'Plank variations',d:'3×40s',c:'Front & side — brace as if shielding the ball.'},
+  {n:'Dead bug',d:'3×10 / side',c:'Slow, ribs down — anti-rotation control.'},
+  {n:'Pallof press',d:'3×10 / side',c:'Resist the twist — protects you in 50/50s.'},
+  {n:'Hanging knee raises',d:'3×12',c:'Control the swing, lower with intent.'},
+];
+const MOB=[
+  {n:'Hip 90/90 switches',d:'3×8 / side',c:'Open the hips — where footballers get stiff.'},
+  {n:'Couch stretch',d:'2×45s / side',c:'Quads & hip flexors — undo the sitting and the sprinting.'},
+  {n:'Ankle rocks',d:'3×10 / side',c:'Drive the knee over the toe — better cuts, fewer rolls.'},
+  {n:'Thoracic openers',d:'2×8 / side',c:'Rotate through the upper back, breathe into it.'},
+];
+const RECOV=[
+  {n:'Easy spin / walk',d:'12 min',c:'Zone-1 flush — move blood, don’t add fatigue.'},
+  {n:'Foam roll circuit',d:'8 min',c:'Quads, calves, glutes, back — slow passes, breathe.'},
+  {n:'Box breathing',d:'4 min',c:'4 in, 4 hold, 4 out, 4 hold — drop the nervous system.'},
+  {n:'Static stretch hold',d:'6×40s',c:'Hamstrings, hips, calves — end-of-day lengthen.'},
+];
+const POS_EXTRA={
+  GK:{n:'Reaction dives & lateral push',d:'5×6',c:'Explosive sideways power — get up fast and set.', pool:'agility'},
+  DEF:{n:'Heading & jump timing',d:'5×5',c:'Standing-to-jump headers — win the aerial duel.', pool:'power'},
+  MID:{n:'Repeated sprint sets',d:'8×30m',c:'Box-to-box engine — short rest, hold the times.', pool:'endurance'},
+  FWD:{n:'First-step + finish',d:'6×15m',c:'Burst, plant, strike — sharpen the killer move.', pool:'speed'},
+  ANY:{n:'Small-sided game touch',d:'10 min',c:'Just play — the best conditioning is the game itself.', pool:'agility'}
+};
+
+function pick(arr,n,seed){ // shuffle copy, take n
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(((Math.sin(seed*99+i)+1)/2)*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a.slice(0,n);
+}
+function resolveFocus(focus){
+  if(focus!=='auto') return focus;
+  const g=state.profile.goal;
+  return g==='power'?'power':g==='endurance'?'endurance':g==='lean'?'agility':'recovery';
+}
+function buildSession(focus, time){
+  const seed=Date.now()%100000;
+  const f=resolveFocus(focus);
+  const mainPools={
+    speed:[SPEED,AGIL], power:[POWER,STR], agility:[AGIL,SPEED],
+    endurance:[END,CORE], strength:[STR,POWER], recovery:[MOB,RECOV]
+  }[f] || [POWER,STR];
+  const isRecovery=(f==='recovery');
+  const counts={15:{w:1,m:2,c:1},30:{w:1,m:3,c:1},45:{w:2,m:4,c:1}}[time]||{w:1,m:3,c:1};
+  const blocks=[];
+  // warmup
+  blocks.push({name:isRecovery?'Reset':'Warm-up', color:'#0A5C3A', time:isRecovery?'3 min':'6 min',
+    ex: isRecovery?pick(RECOV,counts.w,seed):pick(WARM,counts.w,seed)});
+  // main
+  let mainEx=[];
+  mainPools.forEach((p,i)=> mainEx.push(...pick(p, i===0?Math.ceil(counts.m/2):Math.floor(counts.m/2), seed+i)));
+  // position-specific insert (skip for recovery)
+  if(!isRecovery){
+    const pe=POS_EXTRA[state.profile.pos||'ANY'];
+    if(pe) mainEx.splice(1,0,{n:pe.n,d:pe.d,c:pe.c});
+  }
+  blocks.push({name:isRecovery?'Mobility':'Main — '+f.charAt(0).toUpperCase()+f.slice(1), color:isRecovery?'#2F6BE8':'#E8112D',
+    time: time-(isRecovery?9:12)+' min', ex:mainEx});
+  // finisher / core
+  blocks.push({name:isRecovery?'Breathe down':'Core finisher', color:isRecovery?'#6A1FE0':'#1A2C8C',
+    time:isRecovery?'4 min':'6 min', ex: isRecovery?pick(RECOV,counts.c,seed+5):pick(CORE,counts.c,seed+5)});
+  if(time>=45 && !isRecovery) blocks.push({name:'Cooldown',color:'#0A5C3A',time:'5 min',ex:pick(MOB,1,seed+9)});
+  return {focus:f, time, blocks};
+}
+
+/* ---------- rendering ---------- */
+function renderSession(s){
+  const out=$('#sessionOut');
+  out.innerHTML = s.blocks.map(b=>`
+    <div class="block">
+      <div class="bh" style="background:${b.color}">
+        <span class="bn">${b.name}</span>
+        <span class="bt">${b.time}</span>
+      </div>
+      ${b.ex.map(e=>`<div class="ex"><div class="et"><span class="en">${e.n}</span><span class="ed">${e.d}</span></div><div class="ec">${e.c}</div></div>`).join('')}
+    </div>`).join('') +
+    `<button class="btn" id="completeBtn">Mark session complete</button>
+     <button class="btn ghost sm" id="regenBtn" style="margin-top:10px">Generate another</button>`;
+  $('#completeBtn').onclick=()=>{
+    const t=todayKey();
+    state.training[t]=(state.training[t]||0)+1;
+    save(); toast('Session logged. GAME ON.'); refreshToday();
+  };
+  $('#regenBtn').onclick=()=>generate();
+}
+function generate(){
+  const focus=activeChip('#t_focus'), time=+activeChip('#t_time');
+  renderSession(buildSession(focus,+time));
+}
+
+/* ---------- food log ---------- */
+function addFood(name,kcal,p,c,f,meal){
+  if(!name||!kcal) { toast('Add a name and calories.'); return; }
+  const t=todayKey();
+  state.log[t]=state.log[t]||[];
+  state.log[t].push({name,kcal:+kcal,p:+p||0,c:+c||0,f:+f||0,meal:meal||'Snack',id:Date.now()});
+  save(); refreshEat(); refreshToday();
+  toast(name+' logged');
+}
+function renderLog(){
+  const t=todayKey(), items=(state.log[t]||[]);
+  const box=$('#logList');
+  if(!items.length){ box.innerHTML='<div class="empty">Nothing logged yet. Hit a quick-add or fill the form above.</div>'; return; }
+  box.innerHTML=items.slice().reverse().map((it,idx)=>{
+    const col=PALETTE[(it.name.length+idx)%PALETTE.length];
+    return `<div class="logitem">
+      <span class="tag" style="background:${col}"></span>
+      <div><div class="nm">${esc(it.name)}</div><div class="mi">${it.meal} • ${it.p}P ${it.c}C ${it.f}F</div></div>
+      <span class="kc">${it.kcal}</span>
+      <button class="del" data-del="${it.id}">×</button>
+    </div>`;
+  }).join('');
+  $$('[data-del]',box).forEach(b=>b.onclick=()=>{
+    state.log[t]=state.log[t].filter(x=>x.id!=b.dataset.del);
+    save(); renderLog(); refreshEat(); refreshToday();
+  });
+}
+
+/* ---------- today totals ---------- */
+function dayTotals(t){
+  return (state.log[t]||[]).reduce((a,x)=>({k:a.k+x.kcal,p:a.p+x.p,c:a.c+x.c,f:a.f+x.f}),{k:0,p:0,c:0,f:0});
+}
+function refreshToday(){
+  const tg=state.targets, t=dayTotals(todayKey());
+  const left=Math.max(0,tg.kcal-t.k);
+  $('#kcalLeft').textContent=fmt(tg.kcal-t.k);
+  $('#kcalSub').textContent=`${fmt(t.k)} of ${fmt(tg.kcal)} kcal used`;
+  setMacro('p',t.p,tg.protein); setMacro('c',t.c,tg.carbs); setMacro('f',t.f,tg.fat);
+  // session card
+  const f=resolveFocus('auto');
+  $('#sessName').textContent={power:'Power & Strength',endurance:'Engine Builder',agility:'Agility & Speed',recovery:'Recovery Flow'}[f]||'Football Fitness';
+  const posWord={GK:'goalkeepers',DEF:'defenders',MID:'midfielders',FWD:'forwards',ANY:'all players'}[state.profile.pos||'ANY'];
+  $('#sessMeta').textContent=`30 min • tuned for ${posWord}`;
+  // streak + counts
+  $('#streakN').textContent=calcStreak();
+  $('#trainedN').textContent=Object.values(state.training).reduce((a,b)=>a+b,0);
+  $('#loggedN').textContent=Object.values(state.log).reduce((a,arr)=>a+arr.length,0);
+  // tip of day
+  const tip=TIPS[new Date().getDate()%TIPS.length];
+  $('#todayTip').textContent=tip.t;
+  // hero tone shifts if over target
+  $('#todayHero').className='hero tap'+(t.k>tg.kcal?' over':'');
+  if(t.k>tg.kcal){ $('#kcalLeft').textContent='+'+fmt(t.k-tg.kcal); $('#kcalSub').textContent='Over target — ease off or train it out.'; }
+}
+function setMacro(key,now,goal){
+  const pct=goal?Math.min(100,Math.round(now/goal*100)):0;
+  $('#'+key+'Now').textContent=Math.round(now);
+  $('#'+key+'Goal').textContent=goal;
+  $('#'+key+'Pct').textContent=pct+'%';
+  $('#'+key+'Bar').style.width=pct+'%';
+}
+function refreshEat(){
+  const tg=state.targets, t=dayTotals(todayKey());
+  $('#eatNow').textContent=fmt(t.k);
+  $('#eatGoal').textContent=' / '+fmt(tg.kcal);
+  const rem=tg.kcal-t.k;
+  $('#eatStatus').textContent = t.k===0 ? 'Log your first meal to get going.'
+    : rem>0 ? `${fmt(rem)} kcal of fuel left today.` : `${fmt(-rem)} kcal over — recovery food only.`;
+  renderLog();
+}
+function calcStreak(){
+  let s=0; const d=new Date();
+  for(;;){ const k=d.toISOString().slice(0,10);
+    if((state.log[k]&&state.log[k].length) || state.training[k]){ s++; d.setDate(d.getDate()-1);} else break; }
+  return s;
+}
+
+/* ---------- patterns ---------- */
+function renderPatterns(){
+  const box=$('#patternBox');
+  const days=Object.keys(state.log).filter(k=>state.log[k].length);
+  if(days.length<2){ box.innerHTML='<div class="empty">Log meals across a few days to unlock your eating patterns.</div>'; return; }
+  const last7=days.sort().slice(-7);
+  let totals=last7.map(k=>dayTotals(k));
+  const avg=k=>Math.round(totals.reduce((a,x)=>a+x[k],0)/totals.length);
+  const ak=avg('k'), ap=avg('p');
+  const tg=state.targets;
+  const proteinHit=totals.filter(x=>x.p>=tg.protein*0.9).length;
+  const ins=[];
+  // calorie pattern
+  const diff=ak-tg.kcal;
+  ins.push(['#E8112D','Average intake',`You're averaging ${fmt(ak)} kcal/day over ${totals.length} days — ${Math.abs(diff)<150?'right on target.':diff>0?fmt(diff)+' above your '+state.profile.goal+' target.':fmt(-diff)+' below target, watch your energy in training.'}`]);
+  // protein
+  ins.push(['#2F6BE8','Protein consistency',`Protein avg ${ap}g vs ${tg.protein}g goal. You hit it on ${proteinHit}/${totals.length} days — ${proteinHit>=totals.length-1?'excellent for recovery.':'spread it across 4 meals to repair faster.'}`]);
+  // meal timing
+  const allItems=last7.flatMap(k=>state.log[k]);
+  const preMatch=allItems.filter(x=>/pre-?match/i.test(x.meal)).length;
+  const snacks=allItems.filter(x=>x.meal==='Snack').length;
+  ins.push(['#15C24E','Habits', preMatch>0?'You log pre-match fuel — good pro habit, keep it carb-led.':snacks>allItems.length*0.4?'A lot of snacking — anchor 3 solid meals to stabilise energy.':'Solid meal structure across the week.']);
+  // recommendation
+  const recColor='#6A1FE0';
+  let rec = state.profile.goal==='lean'
+      ? 'Keep protein high while in a deficit so you lose fat, not the muscle that wins sprints.'
+      : state.profile.goal==='power'
+      ? 'Pair your strength days with the higher-carb meals — fuel the work that builds power.'
+      : 'Front-load carbs around training and keep hydration steady through the week.';
+  ins.push([recColor,'Recommendation', rec]);
+  box.innerHTML=ins.map(i=>`<div class="insight"><span class="dot" style="background:${i[0]}"></span><div><b>${i[1]}</b><p>${i[2]}</p></div></div>`).join('').replace(/border-bottom:1px solid var\(--line\)/,'');
+}
+
+/* ---------- tips ---------- */
+const TIPS=[
+  ['Nutrition','#E8112D','Front-load carbs the night before a match to top off glycogen — pasta beats nerves.'],
+  ['Nutrition','#2F6BE8','Aim for 1.8–2.2g protein per kg bodyweight to rebuild after sessions.'],
+  ['Nutrition','#15C24E','Drink to thirst + check urine colour — pale straw means you’re ready to perform.'],
+  ['Nutrition','#FF4B1F','Eat within 60 min of a match: carbs + protein refills the tank for tomorrow.'],
+  ['Training','#6A1FE0','Sprint when you’re fresh. Speed work after fatigue just trains you to be slow.'],
+  ['Training','#1A2C8C','Do Nordic curls weekly — the single best move to keep hamstrings healthy.'],
+  ['Training','#E8246C','Train change-of-direction off ONE foot — that’s how you actually cut in a game.'],
+  ['Recovery','#0A5C3A','Sleep is the cheapest performance drug. 8+ hours beats any supplement.'],
+  ['Recovery','#22E8C8','A 12-min easy spin the day after a match clears legs faster than sitting still.'],
+  ['Recovery','#B6EE2A','Foam-roll calves and quads before bed on heavy days — 8 minutes, slow passes.'],
+  ['Match day','#F0E92A','Last big meal 3 hours before kickoff. A banana 45 min before tops you up.'],
+  ['Match day','#FF9E80','Warm up the nervous system, not just the muscles — finish with 3 short sprints.'],
+];
+function renderTips(){
+  const filter=activeChip('#tipFilter');
+  let list=TIPS.map((t,i)=>({k:t[0],col:t[1],t:t[2],i}));
+  if(filter!=='all') list=list.filter(x=>x.k===filter);
+  if(state._tipShuffle){ list=list.sort(()=>Math.random()-0.5); }
+  $('#tipGrid').innerHTML=list.map(x=>`
+    <div class="tcard" style="background:${x.col};${x.col==='#F0E92A'||x.col==='#B6EE2A'||x.col==='#22E8C8'||x.col==='#FF9E80'?'color:#0B0B0B':''}">
+      <div class="tk">${x.k}</div><div class="tt">${x.t}</div>
+    </div>`).join('');
+}
+
+/* ---------- helpers ---------- */
+function fmt(n){ return (Math.round(n)).toLocaleString('en-US'); }
+function esc(s){ return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1800); }
+function activeChip(sel){ const a=$(sel+' .chip.on'); return a?a.dataset.v:null; }
+function chipGroup(sel,cb){
+  $$(sel+' .chip').forEach(c=>c.onclick=()=>{
+    $$(sel+' .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); cb&&cb(c.dataset.v);
+  });
+}
+function setChip(sel,val){ $$(sel+' .chip').forEach(c=>c.classList.toggle('on', c.dataset.v===String(val))); }
+function save(){ DB.write(state); }
+
+/* ---------- navigation ---------- */
+const TITLES={today:'Today',eat:'Nutrition',train:'Train',tips:'Tips',me:'Profile'};
+function go(name){
+  $$('.screen').forEach(s=>s.classList.remove('on'));
+  $('#s-'+name).classList.add('on');
+  $$('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav===name));
+  $('#screenTitle').textContent=TITLES[name];
+  $('#scroll').scrollTop=0;
+  if(name==='today') refreshToday();
+  if(name==='eat') refreshEat();
+  if(name==='me'){ fillMe(); renderPatterns(); }
+  if(name==='tips') renderTips();
+}
+$$('.nav button').forEach(b=>b.onclick=()=>go(b.dataset.nav));
+
+/* ---------- onboarding flow ---------- */
+let obStep=0;
+const obState={pos:'MID',days:'4',goal:'power'};
+chipGroup('#ob_pos',v=>{obState.pos=v;obPreview();});
+chipGroup('#ob_days',v=>{obState.days=v;obPreview();});
+chipGroup('#ob_goal',v=>{obState.goal=v;obPreview();});
+['#ob_age','#ob_wt','#ob_ht','#ob_sex'].forEach(s=>$(s).addEventListener('input',obPreview));
+function obProfile(){
+  return {name:$('#ob_name').value.trim()||'Player', age:$('#ob_age').value, sex:$('#ob_sex').value,
+    weight:$('#ob_wt').value, height:$('#ob_ht').value, pos:obState.pos, days:obState.days, goal:obState.goal};
+}
+function obPreview(){
+  const tg=calcTargets(obProfile());
+  $('#ob_preview').textContent=fmt(tg.kcal);
+  $('#ob_preview2').textContent=`kcal • ${tg.protein}g protein target`;
+}
+function obShow(n){
+  obStep=n;
+  $$('.step').forEach(s=>s.classList.toggle('on',+s.dataset.step===n));
+  $$('.progress i').forEach((i,idx)=>i.classList.toggle('on',idx<=n));
+  $('#ob_back').style.display=n===0?'none':'block';
+  $('#ob_next').textContent=n===2?'Start training':'Continue';
+  if(n===2) obPreview();
+}
+$('#ob_next').onclick=()=>{
+  if(obStep===0){
+    if(!$('#ob_wt').value||!$('#ob_ht').value||!$('#ob_age').value){ toast('Fill age, weight & height.'); return; }
+  }
+  if(obStep<2){ obShow(obStep+1); return; }
+  finishOnboard();
+};
+$('#ob_back').onclick=()=>obShow(Math.max(0,obStep-1));
+function finishOnboard(){
+  const profile=obProfile();
+  state={ profile, targets:calcTargets(profile), log:{}, training:{}, _tipShuffle:false };
+  save();
+  $('#onboard').classList.remove('on');
+  boot();
+  toast('Welcome, '+profile.name.split(' ')[0]+' — GAME ON.');
+}
+// build onboarding pattern decor (unify-pattern vibe)
+(function(){
+  const p=$('#obpat'); const cols=['#6A1FE0','#22E8C8','#E8112D','#2F6BE8'];
+  let html='';
+  const blocks=[[0,0,50,55,'#6A1FE0','0 0 40px 0'],[50,0,50,55,'#2F6BE8','0 0 0 40px'],
+    [0,55,50,45,'#22E8C8','0 40px 0 0'],[50,55,50,45,'#E8112D','40px 0 0 0']];
+  blocks.forEach(b=>{html+=`<i style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%;background:${b[4]};border-radius:${b[5]};opacity:.16"></i>`;});
+  p.innerHTML=html;
+})();
+
+/* ---------- eat screen wiring ---------- */
+function buildQuickFoods(){
+  $('#quickFoods').innerHTML=QUICK.map((q,i)=>`<button class="chip q" data-q="${i}">${q[0]} · ${q[1]}</button>`).join('');
+  $$('#quickFoods .chip').forEach(b=>b.onclick=()=>{const q=QUICK[+b.dataset.q]; addFood(q[0],q[1],q[2],q[3],q[4],'Snack');});
+}
+$('#addFood').onclick=()=>{
+  addFood($('#f_name').value.trim(),$('#f_kcal').value,$('#f_p').value,$('#f_c').value,$('#f_f').value,$('#f_meal').value);
+  ['#f_name','#f_kcal','#f_p','#f_c','#f_f'].forEach(s=>$(s).value='');
+};
+
+/* ---------- train wiring ---------- */
+chipGroup('#t_focus'); chipGroup('#t_time');
+$('#genBtn').onclick=generate;
+
+/* ---------- tips wiring ---------- */
+chipGroup('#tipFilter',()=>{state._tipShuffle=false;renderTips();});
+$('#shuffleTips').onclick=()=>{state._tipShuffle=true;renderTips();toast('Tips shuffled');};
+
+/* ---------- me / profile wiring ---------- */
+chipGroup('#me_pos'); chipGroup('#me_goal'); chipGroup('#me_days');
+function fillMe(){
+  const p=state.profile,t=state.targets;
+  $('#me_name').value=p.name; $('#me_wt').value=p.weight; $('#me_ht').value=p.height;
+  $('#me_age').value=p.age; $('#me_sex').value=p.sex;
+  setChip('#me_pos',p.pos); setChip('#me_goal',p.goal); setChip('#me_days',p.days);
+  $('#me_kcal').textContent=fmt(t.kcal)+' kcal';
+  $('#me_protein').textContent=t.protein+' g';
+  $('#me_carbs').textContent=t.carbs+' g';
+  $('#me_fat').textContent=t.fat+' g';
+  $('#me_tdee').textContent=fmt(t.tdee)+' kcal';
+}
+$('#me_save').onclick=()=>{
+  const p=state.profile;
+  p.name=$('#me_name').value.trim()||'Player'; p.weight=$('#me_wt').value; p.height=$('#me_ht').value;
+  p.age=$('#me_age').value; p.sex=$('#me_sex').value;
+  p.pos=activeChip('#me_pos'); p.goal=activeChip('#me_goal'); p.days=activeChip('#me_days');
+  state.targets=calcTargets(p); save(); fillMe(); refreshToday(); toast('Profile updated');
+};
+$('#resetBtn').onclick=()=>{
+  if(confirm('Reset everything? Your logs, sessions and profile will be wiped.')){
+    try{localStorage.removeItem('gameon26');}catch(e){} mem=null; location.reload();
+  }
+};
+
+/* ---------- boot ---------- */
+function boot(){
+  buildQuickFoods();
+  refreshToday(); refreshEat(); renderTips();
+  generate(); // pre-fill a session
+  const d=new Date(); const wd=['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+  $('#dayLabel').innerHTML=wd+'<br>'+d.getDate();
+  go('today');
+}
+if(state && state.profile){ $('#onboard').classList.remove('on'); boot(); }
+else { obShow(0); }
+</script>
+</body>
+</html>
